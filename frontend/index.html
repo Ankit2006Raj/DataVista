@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description"
+        content="DataVista - Enterprise-Grade Data Analytics & Automated Reporting. Transform your CSV data into actionable insights.">
+    <meta name="theme-color" content="#3498db">
+    <title>DataVista - Enterprise-Grade Data Analytics & Automated Reporting</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="footer-styles.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">📊</span>
+                <span class="logo-text">DataVista</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#how-to-use" class="nav-link">How to Use</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Enterprise-Grade Data Analytics & Automated Reporting</h1>
+            <p class="hero-subtitle">Turn complex data into clear, actionable insights with DataVista</p>
+            <p class="hero-description">A powerful analytics platform tailored for data scientists, analysts, and
+                business teams</p>
+            <button class="cta-button" onclick="document.getElementById('app').scrollIntoView({behavior: 'smooth'})">Get
+                Started</button>
+        </div>
+        <div class="hero-background"></div>
+    </section>
+
+    <!-- Main Application Section -->
+    <section id="app" class="app-section">
+        <div class="container">
+            <div class="app-header">
+                <h2>Data Analysis Dashboard</h2>
+                <p>Upload your CSV file and generate comprehensive reports instantly</p>
+            </div>
+
+            <div class="dashboard-layout">
+                <!-- Top Section: File Upload -->
+                <div class="upload-section">
+                    <div class="card upload-card">
+                        <div class="card-body">
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <input type="file" id="csvFile" accept=".csv" style="display: none;">
+                                <div class="upload-content">
+                                    <div class="upload-icon">📤</div>
+                                    <div class="upload-details">
+                                        <p class="upload-text">Click to select or drag & drop your CSV file</p>
+                                        <p class="upload-hint">Supports files up to 500MB</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="fileInfo" class="file-info" style="display: none;">
+                                <div class="file-status">
+                                    <span class="status-icon">✓</span>
+                                    <span id="fileName">file.csv</span>
+                                </div>
+                                <button class="btn-secondary btn-sm" onclick="resetFile()">Change File</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-grid">
+                    <!-- Left Column: Configuration -->
+                    <div class="config-column">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>⚙️ Configuration</h3>
+                                <p>Customize your analysis settings</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="reportTitle">Report Title</label>
+                                    <input type="text" id="reportTitle" placeholder="Enter report title"
+                                        value="Professional Data Analysis Report">
+                                </div>
+                                <div class="form-group">
+                                    <label for="reportSubtitle">Report Subtitle</label>
+                                    <input type="text" id="reportSubtitle" placeholder="Enter report subtitle"
+                                        value="Comprehensive Analysis & Insights">
+                                </div>
+                                <div class="form-group checkbox-group">
+                                    <label>
+                                        <input type="checkbox" id="includeCharts" checked>
+                                        Include Visualizations
+                                    </label>
+                                </div>
+                                <div class="form-group checkbox-group">
+                                    <label>
+                                        <input type="checkbox" id="include3D" checked>
+                                        Include 3D Charts
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card info-card">
+                            <div class="card-header">
+                                <h3>ℹ️ Quick Tips</h3>
+                            </div>
+                            <div class="card-body">
+                                <ul class="tips-list">
+                                    <li>Ensure CSV has headers in first row</li>
+                                    <li>Analysis runs in background</li>
+                                    <li>Reports are generated in PDF format</li>
+                                    <li>All data is processed locally</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Analysis & Results -->
+                    <div class="analysis-column">
+                        <!-- Stats Row -->
+                        <div class="stats-row">
+                            <div class="stat-card">
+                                <div class="stat-label">Rows</div>
+                                <div class="stat-value" id="statRows">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Columns</div>
+                                <div class="stat-value" id="statColumns">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Size</div>
+                                <div class="stat-value" id="statSize">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Status</div>
+                                <div class="stat-value" id="statStatus">-</div>
+                            </div>
+                        </div>
+                        <!-- Analysis Control & Progress -->
+                        <div class="card control-card">
+                            <div class="card-header">
+                                <h3>🚀 Analysis Control</h3>
+                            </div>
+                            <div class="card-body">
+                                <!-- Primary Action -->
+                                <button class="btn-primary btn-lg" id="generateBtn" onclick="generateReport()" disabled>
+                                    Generate Professional Report
+                                </button>
+
+                                <!-- Progress Section -->
+                                <div class="progress-section">
+                                    <div class="progress-container">
+                                        <div class="progress-bar-wrapper">
+                                            <div class="progress-bar" id="progressBar"></div>
+                                        </div>
+                                        <div class="progress-text">
+                                            <span id="progressPercentage">0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="status-message" id="statusMessage">
+                                        Ready to generate report
+                                    </div>
+                                </div>
+
+                                <!-- Result Actions -->
+                                <div class="result-actions">
+                                    <button class="btn-secondary" id="openBtn" onclick="openReport()" disabled>
+                                        📂 Open Report
+                                    </button>
+                                    <button class="btn-secondary" id="downloadBtn" onclick="downloadReport()" disabled>
+                                        ⬇️ Download PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Reports -->
+                        <div class="card recent-card">
+                            <div class="card-header">
+                                <h3>📋 Recent Reports</h3>
+                            </div>
+                            <div class="card-body">
+                                <div id="recentReports" class="recent-reports-list">
+                                    <p class="empty-message">No reports generated yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Comprehensive Analysis</h3>
+                    <p>Analyze sales patterns, customer segments, regional performance, and more with advanced
+                        statistical methods.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Professional Visualizations</h3>
+                    <p>Generate beautiful charts, graphs, and 3D visualizations that make data insights easy to
+                        understand.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3>PDF Reports</h3>
+                    <p>Create professional, branded PDF reports with executive summaries, detailed analysis, and
+                        recommendations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast Processing</h3>
+                    <p>Handle large datasets efficiently with optimized algorithms and background processing.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Actionable Insights</h3>
+                    <p>Get key findings and recommendations to drive business decisions and strategy.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Data Privacy</h3>
+                    <p>All data is processed locally on your machine. No data is sent to external servers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use Section -->
+    <section id="how-to-use" class="how-to-use-section">
+        <div class="container">
+            <h2 class="section-title">How to Use DataVista</h2>
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Upload Your Data</h3>
+                    <p>Select a CSV file containing your data. The file should have headers in the first row and can
+                        contain any number of rows and columns.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Configure Settings</h3>
+                    <p>Customize your report title, subtitle, and choose which visualizations to include in your
+                        analysis.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Generate Report</h3>
+                    <p>Click the "Generate Report" button to start the analysis. The process runs in the background and
+                        you can monitor progress.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Review Results</h3>
+                    <p>Once complete, open the generated PDF report to view comprehensive analysis, visualizations, and
+                        recommendations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="use-cases-section">
+        <div class="container">
+            <h2 class="section-title">Use Cases & Benefits</h2>
+            <div class="use-cases-grid">
+                <div class="use-case-card">
+                    <h3>📊 For Data Analysts</h3>
+                    <ul>
+                        <li>Quickly analyze large datasets</li>
+                        <li>Generate professional reports for stakeholders</li>
+                        <li>Identify trends and patterns</li>
+                        <li>Create data-driven recommendations</li>
+                        <li>Save time on manual analysis</li>
+                    </ul>
+                </div>
+                <div class="use-case-card">
+                    <h3>🔬 For Data Scientists</h3>
+                    <ul>
+                        <li>Exploratory data analysis</li>
+                        <li>Statistical analysis and insights</li>
+                        <li>Visualization of complex data</li>
+                        <li>Baseline for advanced modeling</li>
+                        <li>Documentation and reporting</li>
+                    </ul>
+                </div>
+                <div class="use-case-card">
+                    <h3>💼 For Business Professionals</h3>
+                    <ul>
+                        <li>Understand business metrics</li>
+                        <li>Make informed decisions</li>
+                        <li>Present data to executives</li>
+                        <li>Track performance trends</li>
+                        <li>Identify growth opportunities</li>
+                    </ul>
+                </div>
+                <!-- <div class="use-case-card">
+                    <h3>🎓 For Researchers</h3>
+                    <ul>
+                        <li>Analyze research data</li>
+                        <li>Generate publication-ready reports</li>
+                        <li>Statistical validation</li>
+                        <li>Comparative analysis</li>
+                        <li>Documentation of findings</li>
+                    </ul>
+                </div> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title">About DataVista</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Enterprise-Grade Data Analysis Platform</h3>
+                    <p>DataVista is a cutting-edge data analytics and automated reporting platform designed to empower
+                        data professionals, business analysts, and researchers with powerful tools to transform raw data
+                        into actionable insights.</p>
+
+                    <h4>Our Mission</h4>
+                    <p>To democratize data analysis by providing an intuitive, professional-grade platform that makes
+                        advanced analytics accessible to everyone, regardless of technical expertise.</p>
+
+                    <h4>Key Capabilities</h4>
+                    <ul class="about-list">
+                        <li><strong>Advanced Analytics:</strong> Comprehensive statistical analysis including sales
+                            patterns, customer segmentation, regional performance, and temporal trends</li>
+                        <li><strong>Professional Visualizations:</strong> Generate 10+ types of charts and graphs
+                            including 3D visualizations for complex data relationships</li>
+                        <li><strong>Automated Reporting:</strong> Create branded PDF reports with executive summaries,
+                            detailed analysis, and actionable recommendations</li>
+                        <li><strong>Scalability:</strong> Handle datasets from thousands to millions of rows with
+                            optimized performance</li>
+                        <li><strong>Data Privacy:</strong> All processing happens locally - your data never leaves your
+                            machine</li>
+                        <li><strong>User-Friendly Interface:</strong> Intuitive design that requires no technical
+                            knowledge to operate</li>
+                    </ul>
+
+                    <h4>Technology Stack</h4>
+                    <p>Built with Python, Pandas, Matplotlib, and ReportLab for robust data processing and professional
+                        report generation.</p>
+
+                    <h4>Why Choose DataVista?</h4>
+                    <ul class="about-list">
+                        <li>✓ Save hours on manual data analysis</li>
+                        <li>✓ Generate professional reports instantly</li>
+                        <li>✓ Make data-driven decisions with confidence</li>
+                        <li>✓ Scalable solution for any dataset size</li>
+                        <li>✓ Secure local processing</li>
+                        <li>✓ Continuous updates and improvements</li>
+                    </ul>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-box">
+                        <div class="stat-number">10+</div>
+                        <div class="stat-desc">Chart Types</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">1M+</div>
+                        <div class="stat-desc">Rows Supported</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-desc">Local Processing</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-desc">Possibilities</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Modern Footer Section -->
+    <footer class="modern-footer">
+        <div class="footer-bg-animation"></div>
+
+        <div class="footer-content">
+            <div class="footer-main">
+                <!-- Brand Section -->
+                <div class="footer-brand-section">
+                    <div class="brand-logo-footer">
+                        <span class="brand-icon">📊</span>
+                        <span class="brand-name">DataVista</span>
+                    </div>
+                    <p class="brand-slogan">Transforming Data into Intelligence</p>
+                    <p class="brand-desc">The most powerful analytics platform for modern data professionals. Built with
+                        precision, designed for excellence.</p>
+
+                    <!-- Social Media -->
+                    <div class="social-section">
+                        <p class="social-title">Connect With Me</p>
+                        <div class="social-icons">
+                            <a href="https://github.com/Ankit2006Rajand" target="_blank" rel="noopener noreferrer"
+                                class="social-btn github-btn" aria-label="GitHub">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                                </svg>
+                                <span>GitHub</span>
+                            </a>
+                            <a href="https://www.linkedin.com/in/ankit-raj-226a36309" target="_blank"
+                                rel="noopener noreferrer" class="social-btn linkedin-btn" aria-label="LinkedIn">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                                </svg>
+                                <span>LinkedIn</span>
+                            </a>
+                            <a href="mailto:ankit9905163014@gmail.com" class="social-btn email-btn" aria-label="Email">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                </svg>
+                                <span>Email</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-links-grid">
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Product</h4>
+                        <ul class="footer-list">
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#how-to-use">How It Works</a></li>
+                            <li><a href="#app">Dashboard</a></li>
+                            <li><a href="#about">About</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Resources</h4>
+                        <ul class="footer-list">
+                            <li><a href="#docs">Documentation</a></li>
+                            <li><a href="#tutorials">Tutorials</a></li>
+                            <li><a href="#api">API Guide</a></li>
+                            <li><a href="#support">Support</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Company</h4>
+                        <ul class="footer-list">
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#blog">Blog</a></li>
+                            <li><a href="#careers">Careers</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-left">
+                    <p>&copy; 2025 DataVista. Crafted with <span class="heart-icon">❤️</span> by <a
+                            href="https://github.com/Ankit2006Rajand" target="_blank" class="creator-link">Ankit Raj</a>
+                    </p>
+                </div>
+                <div class="footer-bottom-right">
+                    <a href="#privacy">Privacy</a>
+                    <span class="dot">•</span>
+                    <a href="#terms">Terms</a>
+                    <span class="dot">•</span>
+                    <a href="#cookies">Cookies</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animated Gradient Orbs -->
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

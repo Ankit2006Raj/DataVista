@@ -1,0 +1,87 @@
+{
+  "application": {
+    "name": "DataVista",
+    "version": "1.0.0",
+    "description": "Professional Automated Report Generation System",
+    "author": "CodeTech Internship"
+  },
+  "analysis": {
+    "enable_temporal_analysis": true,
+    "enable_statistical_analysis": true,
+    "enable_regional_analysis": true,
+    "enable_customer_segmentation": true,
+    "enable_shipping_analysis": true,
+    "decimal_places": 2,
+    "top_n_products": 10,
+    "top_n_cities": 10,
+    "top_n_states": 10,
+    "top_n_subcategories": 15
+  },
+  "visualizations": {
+    "dpi": 300,
+    "figure_size": {
+      "width": 10,
+      "height": 6
+    },
+    "style": "whitegrid",
+    "color_palette": "viridis",
+    "enable_3d_charts": true,
+    "enable_pie_charts": true,
+    "enable_histograms": true,
+    "enable_bar_charts": true,
+    "chart_format": "png"
+  },
+  "pdf_report": {
+    "page_size": "A4",
+    "left_margin": 0.5,
+    "right_margin": 0.5,
+    "top_margin": 0.75,
+    "bottom_margin": 0.75,
+    "include_title_page": true,
+    "include_executive_summary": true,
+    "include_sales_analysis": true,
+    "include_product_analysis": true,
+    "include_category_analysis": true,
+    "include_regional_analysis": true,
+    "include_customer_analysis": true,
+    "include_visualizations": true,
+    "include_shipping_analysis": true,
+    "include_conclusions": true,
+    "font_name": "Helvetica",
+    "title_font_size": 28,
+    "heading_font_size": 16,
+    "body_font_size": 11
+  },
+  "ui": {
+    "theme": "glassmorphic",
+    "window_width": 1000,
+    "window_height": 700,
+    "min_width": 900,
+    "min_height": 600,
+    "primary_color": "#3498db",
+    "secondary_color": "#2c3e50",
+    "accent_color": "#e74c3c",
+    "success_color": "#27ae60",
+    "warning_color": "#f39c12",
+    "error_color": "#e74c3c"
+  },
+  "output": {
+    "default_pdf_name": "report",
+    "default_chart_dir": "charts",
+    "timestamp_format": "%Y%m%d_%H%M%S",
+    "create_subdirectories": true,
+    "overwrite_existing": false
+  },
+  "performance": {
+    "enable_multithreading": true,
+    "max_workers": 4,
+    "chunk_size": 10000,
+    "cache_results": true
+  },
+  "logging": {
+    "enable_logging": true,
+    "log_level": "INFO",
+    "log_file": "datavista.log",
+    "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  }
+}

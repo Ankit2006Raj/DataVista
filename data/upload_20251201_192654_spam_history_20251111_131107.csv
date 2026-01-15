@@ -1,0 +1,19 @@
+ID,Timestamp,Prediction,Confidence,Text Preview
+782a1b9e,2025-11-11T11:33:15.983433,SPAM,56.08,"URGENT: Update your bank details immediately! Dear Customer,
+Your account has been temporarily susp"
+89f984a5,2025-11-11T10:41:01.307032,NOT SPAM,85.88,"Meeting Reminder: Project Discussion Tomorrow Hi Team,
+This is a reminder that our project discussi"
+cf71b98e,2025-11-11T10:40:18.306364,SPAM,80.03,"🎁 Congratulations! You’ve won a $1000 Amazon Gift Card! Dear User,
+You have been selected as our lu"
+63c6f93a,2025-11-11T10:38:38.347228,SPAM,80.03,"🎁 Congratulations! You’ve won a $1000 Amazon Gift Card! Dear User,
+You have been selected as our lu"
+74e483a7,2025-11-10T22:38:27.454913,NOT SPAM,66.5,"Weekly AI Trends – November 2025 Edition Hello Ankit,
+Here’s your weekly dose of AI industry news, "
+21cff3ae,2025-11-10T22:30:49.537347,NOT SPAM,66.5,"Weekly AI Trends – November 2025 Edition Hello Ankit,
+Here’s your weekly dose of AI industry news, "
+77998a62,2025-11-10T22:29:47.982231,SPAM,92.2,"🎉 Congratulations! You’ve won a brand new iPhone 15 Pro! Dear User,
+You’ve been selected as our luc"
+041a9f18,2025-11-10T22:29:25.603662,SPAM,92.2,"🎉 Congratulations! You’ve won a brand new iPhone 15 Pro! Dear User,
+You’ve been selected as our luc"
+cf10cba0,2025-11-10T22:29:21.605021,SPAM,92.2,"🎉 Congratulations! You’ve won a brand new iPhone 15 Pro! Dear User,
+You’ve been selected as our luc"
