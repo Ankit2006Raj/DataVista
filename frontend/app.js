@@ -53,15 +53,30 @@ function initializeApp() {
 
 function setupNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    }
+
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             navLinks.forEach(l => l.classList.remove('active'));
             this.classList.add('active');
+            
+            // Close mobile menu when a link is clicked
+            if (navMenu && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
         });
     });
 
-    // Set home as active by default
-    document.querySelector('a[href="#home"]').classList.add('active');
+    // Set home as active by default if on index.html
+    const homeLink = document.querySelector('a[href="#home"]');
+    if (homeLink) homeLink.classList.add('active');
 }
 
 function handleFileSelect(file) {
@@ -208,10 +223,10 @@ function generateReport() {
         })
         .then(data => {
             clearInterval(progressInterval);
-            console.log('Response data:', data);
+            console.log('Response data received');
             if (data.success) {
                 setProgress(100);
-                completeReportGeneration(data.report);
+                completeReportGeneration(data);
             } else {
                 throw new Error(data.error || 'Unknown error occurred');
             }
@@ -236,28 +251,38 @@ function setProgress(value) {
     }
 }
 
-function completeReportGeneration(reportPath) {
+function completeReportGeneration(reportData) {
     isProcessing = false;
 
-    // Extract filename from path
-    const reportName = reportPath.split('/').pop();
+    // Extract filename and base64 string
+    const reportName = reportData.filename || 'report.pdf';
+    
+    // Convert base64 to Blob URL
+    const byteCharacters = atob(reportData.report_base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], {type: 'application/pdf'});
+    const reportUrl = URL.createObjectURL(blob);
 
     updateStatusMessage(`✓ Report generated successfully: ${reportName}`, 'success');
 
     const openBtn = document.getElementById('openBtn');
     openBtn.disabled = false;
-    openBtn.onclick = () => window.open(reportPath, '_blank');
+    openBtn.onclick = () => window.open(reportUrl, '_blank');
 
     const downloadBtn = document.getElementById('downloadBtn');
     if (downloadBtn) {
         downloadBtn.disabled = false;
-        downloadBtn.onclick = () => triggerDownload(reportPath, reportName);
+        downloadBtn.onclick = () => triggerDownload(reportUrl, reportName);
     }
 
     document.getElementById('generateBtn').disabled = false;
 
     // Add to recent reports
-    addRecentReport(reportName, reportPath);
+    addRecentReport(reportName, reportUrl);
 
     // Show success notification
     showSuccess('Report generated successfully! Click "Open Report" to view it.');

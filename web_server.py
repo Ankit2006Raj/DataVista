@@ -26,7 +26,7 @@ class DataVistaRequestHandler(SimpleHTTPRequestHandler):
         """Handle GET requests"""
         if self.path == '/':
             self.path = '/frontend/index.html'
-        elif self.path in ['/styles.css', '/app.js', '/index.html']:
+        elif self.path in ['/styles.css', '/app.js', '/index.html', '/favicon.png', '/footer-styles.css']:
             self.path = '/frontend' + self.path.replace('/frontend', '')
         return super().do_GET()
     
@@ -109,9 +109,10 @@ class DataVistaRequestHandler(SimpleHTTPRequestHandler):
             
             print(f"[*] File received: {file_data['filename']}")
             
-            # Save the file
+            # Save the file to a temporary directory (Vercel compatible)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            upload_dir = "data"
+            temp_dir = tempfile.gettempdir()
+            upload_dir = os.path.join(temp_dir, "data")
             if not os.path.exists(upload_dir):
                 os.makedirs(upload_dir)
             
@@ -130,7 +131,7 @@ class DataVistaRequestHandler(SimpleHTTPRequestHandler):
             print(f"[*] Starting analysis...")
             
             # Generate report
-            output_dir = "output"
+            output_dir = os.path.join(temp_dir, "output")
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
                 
@@ -158,10 +159,15 @@ class DataVistaRequestHandler(SimpleHTTPRequestHandler):
             
             print(f"[✓] Report generated: {output_pdf}")
             
+            # Read the PDF and convert to base64
+            import base64
+            with open(output_pdf, "rb") as pdf_file:
+                encoded_string = base64.b64encode(pdf_file.read()).decode('utf-8')
+            
             self.send_json_response({
                 'success': True,
-                'report': f"/{output_pdf}",
-                'charts': f"/{chart_dir}",
+                'report_base64': encoded_string,
+                'filename': f"report_{timestamp}.pdf",
                 'message': 'Report generated successfully'
             })
         
