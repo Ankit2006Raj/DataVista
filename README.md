@@ -18,6 +18,9 @@ Transform your CSV data into actionable insights with professional visualization
 </div>
 
 ---
+<img width="1326" height="621" alt="image" src="https://github.com/user-attachments/assets/84f1070c-b30d-4165-bf99-63a9e47850f3" />
+<img width="988" height="626" alt="image" src="https://github.com/user-attachments/assets/c556fc56-41d7-4ffd-a30b-71b281a068ed" />
+
 
 ## 🎯 Overview
 
@@ -62,29 +65,14 @@ Transform your CSV data into actionable insights with professional visualization
 - **Visual Insights**: Embedded charts and graphs
 - **Recommendations**: AI-generated actionable insights
 - **Custom Branding**: DataVista professional styling
-- **Export Options**: PDF format for easy sharing
 
 ### 🎨 Modern Interface
 
 - **Drag & Drop Upload**: Intuitive file handling
-- **Real-time Progress**: Live updates during analysis
 - **Responsive Design**: Works on desktop, tablet, and mobile
 - **Dark Mode Ready**: Eye-friendly interface
 - **Interactive Dashboard**: Configure analysis parameters
 - **Recent Reports**: Quick access to previous analyses
-
----
-
-## 🎬 Demo
-
-### Web Interface
-![DataVista Dashboard](https://via.placeholder.com/800x450/3498db/ffffff?text=DataVista+Dashboard)
-
-### Sample Report
-![Sample PDF Report](https://via.placeholder.com/800x450/2ecc71/ffffff?text=Professional+PDF+Report)
-
-### Visualizations
-![Data Visualizations](https://via.placeholder.com/800x450/e74c3c/ffffff?text=Rich+Visualizations)
 
 ---
 
@@ -183,7 +171,6 @@ pdf.add_executive_summary(results)
 pdf.add_numeric_analysis(results)
 pdf.add_visualizations('output/charts')
 pdf.add_conclusions()
-pdf.build()
 ```
 
 ---
@@ -223,7 +210,6 @@ DataVista/
 - **NumPy**: Numerical computations
 - **Matplotlib**: 2D visualizations
 - **Seaborn**: Statistical visualizations
-- **ReportLab**: PDF generation
 - **Flask**: Web server framework
 
 ### Frontend

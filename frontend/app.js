@@ -6,11 +6,13 @@
 let selectedFile = null;
 let isProcessing = false;
 let recentReports = [];
+let currentUser = null;
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', function () {
     initializeApp();
     loadRecentReports();
+    checkAuthStatus();
 });
 
 function initializeApp() {
@@ -53,30 +55,15 @@ function initializeApp() {
 
 function setupNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-        });
-    }
-
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             navLinks.forEach(l => l.classList.remove('active'));
             this.classList.add('active');
-            
-            // Close mobile menu when a link is clicked
-            if (navMenu && navMenu.classList.contains('active')) {
-                navMenu.classList.remove('active');
-            }
         });
     });
 
-    // Set home as active by default if on index.html
-    const homeLink = document.querySelector('a[href="#home"]');
-    if (homeLink) homeLink.classList.add('active');
+    // Set home as active by default
+    document.querySelector('a[href="#home"]').classList.add('active');
 }
 
 function handleFileSelect(file) {
@@ -158,6 +145,12 @@ function disableGenerateButton() {
 }
 
 function generateReport() {
+    if (!currentUser) {
+        showAuthModal('login');
+        showError('Please login to generate reports');
+        return;
+    }
+
     if (!selectedFile) {
         showError('Please select a CSV file first');
         return;
@@ -223,10 +216,10 @@ function generateReport() {
         })
         .then(data => {
             clearInterval(progressInterval);
-            console.log('Response data received');
+            console.log('Response data:', data);
             if (data.success) {
                 setProgress(100);
-                completeReportGeneration(data);
+                completeReportGeneration(data.report);
             } else {
                 throw new Error(data.error || 'Unknown error occurred');
             }
@@ -251,38 +244,28 @@ function setProgress(value) {
     }
 }
 
-function completeReportGeneration(reportData) {
+function completeReportGeneration(reportPath) {
     isProcessing = false;
 
-    // Extract filename and base64 string
-    const reportName = reportData.filename || 'report.pdf';
-    
-    // Convert base64 to Blob URL
-    const byteCharacters = atob(reportData.report_base64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {type: 'application/pdf'});
-    const reportUrl = URL.createObjectURL(blob);
+    // Extract filename from path
+    const reportName = reportPath.split('/').pop();
 
     updateStatusMessage(`✓ Report generated successfully: ${reportName}`, 'success');
 
     const openBtn = document.getElementById('openBtn');
     openBtn.disabled = false;
-    openBtn.onclick = () => window.open(reportUrl, '_blank');
+    openBtn.onclick = () => window.open(reportPath, '_blank');
 
     const downloadBtn = document.getElementById('downloadBtn');
     if (downloadBtn) {
         downloadBtn.disabled = false;
-        downloadBtn.onclick = () => triggerDownload(reportUrl, reportName);
+        downloadBtn.onclick = () => triggerDownload(reportPath, reportName);
     }
 
     document.getElementById('generateBtn').disabled = false;
 
     // Add to recent reports
-    addRecentReport(reportName, reportUrl);
+    addRecentReport(reportName, reportPath);
 
     // Show success notification
     showSuccess('Report generated successfully! Click "Open Report" to view it.');
@@ -339,14 +322,14 @@ function updateRecentReportsList() {
     }
 
     recentReportsList.innerHTML = recentReports.map((report, index) => `
-        <div class="report-item">
+        <div class="report-item" style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-light);">
             <div>
-                <div style="font-weight: 600; color: #2c3e50;">${report.name}</div>
-                <div style="font-size: 0.85rem; color: #7f8c8d;">${report.date} at ${report.time}</div>
+                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem; word-break: break-all;">${report.name}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">${report.date} at ${report.time}</div>
             </div>
-            <div class="report-actions">
-                <button onclick="window.open('${report.path}', '_blank')" title="Open Report">📂</button>
-                <button onclick="triggerDownload('${report.path}', '${report.name}')" title="Download Report">⬇️</button>
+            <div class="report-actions" style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+                <button class="btn-secondary" onclick="window.open('${report.path}', '_blank')" title="Open Report" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📂 Open</button>
+                <button class="btn-secondary" onclick="triggerDownload('${report.path}', '${report.name}')" title="Download Report" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">⬇️ Download</button>
             </div>
         </div>
     `).join('');
@@ -495,13 +478,195 @@ document.head.appendChild(style);
 // Smooth scroll for navigation
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const href = this.getAttribute('href');
+        if (href === '#') {
+            e.preventDefault();
+            return;
+        }
+        const target = document.querySelector(href);
         if (target) {
+            e.preventDefault();
             target.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
             });
         }
     });
+});
+
+/* ============================================
+   AUTHENTICATION LOGIC
+   ============================================ */
+
+let authMode = 'login'; // 'login' or 'register'
+
+function showAuthModal(mode = 'login') {
+    authMode = mode;
+    document.getElementById('authModal').style.display = 'block';
+    updateAuthUI();
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+    document.getElementById('authUsername').value = '';
+    document.getElementById('authEmail').value = '';
+    document.getElementById('authPassword').value = '';
+}
+
+function toggleAuthMode() {
+    authMode = authMode === 'login' ? 'register' : 'login';
+    updateAuthUI();
+}
+
+function updateAuthUI() {
+    const title = document.getElementById('authTitle');
+    const emailGroup = document.getElementById('emailGroup');
+    const submitBtn = document.getElementById('authSubmitBtn');
+    const toggleLink = document.getElementById('authToggleLink');
+
+    if (authMode === 'login') {
+        title.textContent = 'Login';
+        emailGroup.style.display = 'none';
+        submitBtn.textContent = 'Login';
+        toggleLink.textContent = 'Need an account? Sign up';
+    } else {
+        title.textContent = 'Sign Up';
+        emailGroup.style.display = 'block';
+        submitBtn.textContent = 'Sign Up';
+        toggleLink.textContent = 'Already have an account? Login';
+    }
+}
+
+function submitAuth() {
+    const username = document.getElementById('authUsername').value;
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+
+    if (!username || !password) {
+        showError('Please fill in all required fields');
+        return;
+    }
+
+    const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    const payload = { username, password };
+    if (authMode === 'register') payload.email = email;
+
+    fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json().then(data => ({ status: res.status, body: data })))
+    .then(({ status, body }) => {
+        if (status === 200 || status === 201) {
+            showSuccess(body.message);
+            closeAuthModal();
+            checkAuthStatus();
+        } else {
+            showError(body.error || 'Authentication failed');
+        }
+    })
+    .catch(err => showError('Network error during authentication'));
+}
+
+function logoutUser() {
+    fetch('/api/auth/logout', { method: 'POST' })
+        .then(() => {
+            currentUser = null;
+            showSuccess('Logged out successfully');
+            updateNavigationUI();
+            if(window.location.pathname.includes('reports.html')) {
+                window.location.href = '/';
+            }
+        });
+}
+
+function checkAuthStatus() {
+    fetch('/api/auth/me')
+        .then(res => res.json())
+        .then(data => {
+            if (data.authenticated) {
+                currentUser = data.user;
+                updateNavigationUI();
+                fetchMyReports();
+            } else {
+                currentUser = null;
+                updateNavigationUI();
+            }
+        });
+}
+
+function updateNavigationUI() {
+    const loginBtn = document.getElementById('nav-login-btn');
+    const profileMenu = document.getElementById('nav-profile-menu');
+
+    if (currentUser) {
+        if(loginBtn) loginBtn.style.display = 'none';
+        if(profileMenu) {
+            profileMenu.style.display = 'block';
+            const initialObj = document.getElementById('profileInitial');
+            if(initialObj && currentUser.username) {
+                initialObj.innerText = currentUser.username.charAt(0).toUpperCase();
+            }
+        }
+    } else {
+        if(loginBtn) loginBtn.style.display = 'block';
+        if(profileMenu) profileMenu.style.display = 'none';
+    }
+}
+
+function toggleProfileDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    if(dropdown) {
+        dropdown.classList.toggle('active');
+    }
+}
+
+// Close dropdown if clicking outside
+document.addEventListener('click', function(event) {
+    const profileMenu = document.getElementById('nav-profile-menu');
+    const dropdown = document.getElementById('profileDropdown');
+    if (profileMenu && dropdown && !profileMenu.contains(event.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
+function fetchMyReports() {
+    fetch('/api/my-reports')
+        .then(res => {
+            if(!res.ok) throw new Error("Failed to fetch");
+            return res.json();
+        })
+        .then(data => {
+            const list = document.getElementById('reportsList');
+            if (data.reports && data.reports.length > 0) {
+                list.innerHTML = data.reports.map(r => `
+                    <div class="report-card">
+                        <h4>${r.title}</h4>
+                        <p>${new Date(r.created_at).toLocaleString()}</p>
+                        <button class="btn-primary btn-sm" onclick="window.open('${r.file_path}', '_blank')">View PDF</button>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = '<p>No reports generated yet.</p>';
+            }
+        })
+        .catch(err => console.log('Error fetching reports:', err));
+}
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+    }
 });

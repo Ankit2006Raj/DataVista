@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#030712">
+    <title>My Reports - DataVista</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .page-header {
+            padding-top: 120px;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .reports-container {
+            max-width: 1000px;
+            margin: 0 auto 5rem;
+            min-height: 50vh;
+        }
+        .report-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition-normal);
+        }
+        .report-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .report-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+        .report-card p {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" onclick="window.location.href='/'">
+                <span class="logo-icon">📊</span>
+                <span class="logo-text">DataVista</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li id="nav-profile-menu" class="nav-profile" style="display: none;">
+                    <div class="profile-avatar" onclick="toggleProfileDropdown()">
+                        <span id="profileInitial">U</span>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="/" class="dropdown-item">💻 Dashboard</a>
+                        <a href="#" onclick="logoutUser()" class="dropdown-item text-error">🚪 Logout</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container reports-container">
+        <div class="page-header">
+            <h1>My Generated Reports</h1>
+            <p style="color: var(--text-secondary);">View and manage all your past analysis reports.</p>
+        </div>
+        <div id="reportsList" class="reports-grid" style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+            <p style="text-align:center; color: var(--text-secondary);">Loading reports...</p>
+        </div>
+    </div>
+
+    <!-- Need Auth modal globally in case session expires -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 id="authTitle">Login</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="authUsername" placeholder="Username">
+            </div>
+            <div id="emailGroup" class="form-group" style="display: none;">
+                <label>Email</label>
+                <input type="email" id="authEmail" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="authPassword" placeholder="Password">
+            </div>
+            <button class="cta-button" id="authSubmitBtn" onclick="submitAuth()" style="width:100%; margin-top: 10px;">Login</button>
+            <p id="toggleAuthMode" onclick="toggleAuthMode()">Need an account? Sign up</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check auth status immediately
+            fetch('/api/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.authenticated) {
+                        currentUser = data.user;
+                        updateNavigationUI();
+                        fetchMyReports(); // This function from app.js will populate #reportsList
+                    } else {
+                        window.location.href = '/'; // Redirect to home if not logged in
+                    }
+                });
+        });
+    </script>
+</body>
+</html>

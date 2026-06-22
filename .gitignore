@@ -40,19 +40,12 @@ Thumbs.db
 # Project specific
 output/
 *.log
-logs/
 
-# Data files - exclude uploads
+# Ignore user-uploaded data files and generated data
+data/*.csv
 data/upload_*
 
-# Environment variables
+# Environment Variables
 .env
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-coverage.xml
-
-# Type checking
-.mypy_cache/
+.env.*
+!.env.example

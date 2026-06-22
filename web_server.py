@@ -1,142 +1,121 @@
 #!/usr/bin/env python3
 """
-DataVista Web Server
+DataVista Flask Web Server
 Serves the professional web interface and handles report generation
 """
 
 import os
 import sys
-import json
-import threading
-import functools
-import io
-import tempfile
-from email import message_from_binary_file
-from email.parser import BytesParser
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-from pathlib import Path
 from datetime import datetime
+from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask_login import LoginManager, login_required, current_user
+
 from backend.data_analyzer import DataAnalyzer
 from backend.report_generator import PDFReportGenerator
+from backend.models import User, ReportModel
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from dotenv import load_dotenv
 
-class DataVistaRequestHandler(SimpleHTTPRequestHandler):
-    """Custom HTTP request handler for DataVista"""
-    
-    def do_GET(self):
-        """Handle GET requests"""
-        if self.path == '/':
-            self.path = '/frontend/index.html'
-        elif self.path in ['/styles.css', '/app.js', '/index.html', '/favicon.png', '/footer-styles.css']:
-            self.path = '/frontend' + self.path.replace('/frontend', '')
-        return super().do_GET()
-    
-    def do_POST(self):
-        """Handle POST requests for report generation"""
-        if self.path == '/api/generate-report':
-            self.handle_report_generation()
-        else:
-            self.send_error(404)
-    
-    def parse_multipart_form_data(self):
-        """Parse multipart/form-data without using deprecated cgi module"""
-        content_type = self.headers.get('Content-Type', '')
-        if 'multipart/form-data' not in content_type:
-            return None, None
+# Load environment variables from .env
+load_dotenv()
+
+# Configure Cloudinary
+cloudinary.config( 
+  cloud_name = os.environ.get("CLOUDINARY_CLOUD_NAME"), 
+  api_key = os.environ.get("CLOUDINARY_API_KEY"), 
+  api_secret = os.environ.get("CLOUDINARY_API_SECRET"),
+  secure = True
+)
+from backend.auth import auth_bp
+
+app = Flask(__name__, static_folder='frontend')
+secret = os.environ.get('SECRET_KEY')
+if not secret:
+    # Generate a random fallback for local testing, but warn loudly
+    print("WARNING: No SECRET_KEY set in environment! Using a temporary random key.")
+    secret = os.urandom(24)
+app.secret_key = secret
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_by_id(user_id)
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify({'error': 'You must be logged in to access this resource'}), 401
+
+# Register Blueprints
+app.register_blueprint(auth_bp)
+
+# --- STATIC FILE ROUTES ---
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    if os.path.exists(os.path.join(app.static_folder, path)):
+        return app.send_static_file(path)
+    return jsonify({'error': 'File not found'}), 404
+
+# Serve generated output files (PDFs and Charts)
+@app.route('/output/<path:path>')
+def serve_output(path):
+    # In a production app, you might want to add @login_required here and check if the user owns the file
+    return send_from_directory('output', path)
+
+# --- API ROUTES ---
+
+@app.route('/api/my-reports', methods=['GET'])
+@login_required
+def get_my_reports():
+    reports = ReportModel.get_by_user(current_user.id)
+    return jsonify({'reports': reports}), 200
+
+@app.route('/api/generate-report', methods=['POST'])
+@login_required
+def generate_report():
+    try:
+        print("[*] Received report generation request from user:", current_user.username)
         
-        # Extract boundary
-        boundary = None
-        for part in content_type.split(';'):
-            if 'boundary=' in part:
-                boundary = part.split('boundary=')[1].strip()
-                break
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+            
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+            
+        if not file.filename.endswith('.csv'):
+            return jsonify({'error': 'File must be a CSV'}), 400
+
+        print(f"[*] File received: {file.filename}")
         
-        if not boundary:
-            return None, None
+        import tempfile
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        # Read the body
-        content_length = int(self.headers.get('Content-Length', 0))
-        body = self.rfile.read(content_length)
-        
-        # Parse multipart data
-        parts = body.split(f'--{boundary}'.encode())
-        form_data = {}
-        file_data = None
-        
-        for part in parts:
-            if not part or part == b'--\r\n' or part == b'--':
-                continue
+        # Use a temporary directory that will be automatically deleted when the block exits
+        with tempfile.TemporaryDirectory() as temp_dir:
+            file_path = os.path.join(temp_dir, file.filename)
+            file.save(file_path)
             
-            # Split headers and content
-            if b'\r\n\r\n' in part:
-                headers_part, content = part.split(b'\r\n\r\n', 1)
-                content = content.rstrip(b'\r\n')
-                
-                # Parse Content-Disposition
-                headers_str = headers_part.decode('utf-8', errors='ignore')
-                
-                if 'Content-Disposition' in headers_str:
-                    # Extract field name
-                    name_match = headers_str.split('name="')
-                    if len(name_match) > 1:
-                        field_name = name_match[1].split('"')[0]
-                        
-                        # Check if it's a file
-                        if 'filename="' in headers_str:
-                            filename_match = headers_str.split('filename="')
-                            if len(filename_match) > 1:
-                                filename = filename_match[1].split('"')[0]
-                                file_data = {
-                                    'filename': filename,
-                                    'content': content
-                                }
-                        else:
-                            # Regular form field
-                            form_data[field_name] = content.decode('utf-8', errors='ignore')
-        
-        return form_data, file_data
-    
-    def handle_report_generation(self):
-        """Handle report generation request with file upload"""
-        try:
-            print("[*] Received report generation request")
-            
-            # Parse form data
-            form_data, file_data = self.parse_multipart_form_data()
-            
-            if not file_data or not file_data.get('filename'):
-                self.send_json_response({'error': 'No file uploaded'}, 400)
-                return
-            
-            print(f"[*] File received: {file_data['filename']}")
-            
-            # Save the file to a temporary directory (Vercel compatible)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            temp_dir = tempfile.gettempdir()
-            upload_dir = os.path.join(temp_dir, "data")
-            if not os.path.exists(upload_dir):
-                os.makedirs(upload_dir)
-            
-            safe_filename = f"upload_{timestamp}_{os.path.basename(file_data['filename'])}"
-            file_path = os.path.join(upload_dir, safe_filename)
-            
-            with open(file_path, 'wb') as f:
-                f.write(file_data['content'])
-            
-            print(f"[*] File saved to: {file_path}")
+            print(f"[*] File saved temporarily to: {file_path}")
             
             # Get other form fields
-            report_title = form_data.get('title', 'Professional Data Analysis Report')
-            report_subtitle = form_data.get('subtitle', 'Comprehensive Analysis & Insights')
+            report_title = request.form.get('title', 'Professional Data Analysis Report')
+            report_subtitle = request.form.get('subtitle', 'Comprehensive Analysis & Insights')
             
             print(f"[*] Starting analysis...")
             
-            # Generate report
-            output_dir = os.path.join(temp_dir, "output")
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-                
-            output_pdf = os.path.join(output_dir, f"report_{timestamp}.pdf")
-            chart_dir = os.path.join(output_dir, f"charts_{timestamp}")
+            output_pdf = os.path.join(temp_dir, f"report_{timestamp}.pdf")
+            chart_dir = os.path.join(temp_dir, f"charts_{timestamp}")
+            os.makedirs(chart_dir, exist_ok=True)
             
             # Run analysis
             analyzer = DataAnalyzer(file_path)
@@ -157,52 +136,60 @@ class DataVistaRequestHandler(SimpleHTTPRequestHandler):
             report_gen.add_conclusions()
             report_gen.build()
             
-            print(f"[✓] Report generated: {output_pdf}")
+            print(f"[✓] Report generated locally: {output_pdf}")
             
-            # Read the PDF and convert to base64
-            import base64
-            with open(output_pdf, "rb") as pdf_file:
-                encoded_string = base64.b64encode(pdf_file.read()).decode('utf-8')
-            
-            self.send_json_response({
-                'success': True,
-                'report_base64': encoded_string,
-                'filename': f"report_{timestamp}.pdf",
-                'message': 'Report generated successfully'
-            })
-        
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self.send_json_response({'error': str(e)}, 500)
+            try:
+                import cloudinary.utils
+                # Upload to Cloudinary
+                print("[*] Uploading report to Cloudinary...")
+                upload_result = cloudinary.uploader.upload(
+                    output_pdf,
+                    resource_type="image",
+                    public_id=f"reports/report_{timestamp}"
+                )
+                
+                # Generate a signed URL to bypass Cloudinary's default PDF security block
+                web_pdf_path, _ = cloudinary.utils.cloudinary_url(
+                    upload_result['public_id'], 
+                    resource_type="image",
+                    format="pdf",
+                    sign_url=True
+                )
+                print(f"[✓] Successfully uploaded to Cloudinary (Signed): {web_pdf_path}")
+                
+                # Save to database (chart_dir is empty because we don't serve charts directly in production)
+                ReportModel.create(
+                    user_id=current_user.id,
+                    title=report_title,
+                    subtitle=report_subtitle,
+                    file_path=web_pdf_path,
+                    chart_dir=""
+                )
+                
+                return jsonify({
+                    'success': True,
+                    'report': web_pdf_path,
+                    'charts': "",
+                    'message': 'Report generated successfully'
+                })
+            except Exception as e:
+                print(f"[ERROR] Upload or Database Error: {str(e)}")
+                return jsonify({'error': f'Server Error: {str(e)}'}), 500
     
-    def send_json_response(self, data, status_code=200):
-        """Send JSON response"""
-        self.send_response(status_code)
-        self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        self.wfile.write(json.dumps(data).encode('utf-8'))
-    
-    def end_headers(self):
-        """Add CORS headers"""
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        super().end_headers()
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
-def run_server(port=8000):
-    """Run the DataVista web server"""
-    server_address = ('', port)
-    # Serve from current directory (root) so we can access data, output, and frontend
-    # We will handle the redirection to frontend/index.html in do_GET
-    httpd = HTTPServer(server_address, DataVistaRequestHandler)
+if __name__ == '__main__':
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     
     print(f"""
     ╔════════════════════════════════════════════════════════════╗
-    ║          DATAVISTA - WEB SERVER STARTED                    ║
+    ║          DATAVISTA - FLASK WEB SERVER STARTED              ║
     ║                                                            ║
     ║  📊 Enterprise-Grade Data Analytics & Reporting           ║
+    ║  🔒 Authentication & MongoDB Enabled                       ║
     ║                                                            ║
     ║  Server running at: http://localhost:{port}                ║
     ║                                                            ║
@@ -210,13 +197,5 @@ def run_server(port=8000):
     ╚════════════════════════════════════════════════════════════╝
     """)
     
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("\n\n[*] Shutting down server...")
-        httpd.shutdown()
-        print("[✓] Server stopped")
-
-if __name__ == '__main__':
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
-    run_server(port)
+    # Run server (in production, use Gunicorn or Waitress)
+    app.run(host='0.0.0.0', port=port, debug=True)

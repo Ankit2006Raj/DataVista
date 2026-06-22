@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#030712">
+    <title>About Us - DataVista</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" onclick="window.location.href='/'">
+                <span class="logo-icon">📊</span>
+                <span class="logo-text">DataVista</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/#features" class="nav-link">Features</a></li>
+                <li><a href="/#how-to-use" class="nav-link">How to Use</a></li>
+                <li><a href="about.html" class="nav-link active">About</a></li>
+                <li id="nav-login-btn"><a href="#" onclick="showAuthModal('login')" class="nav-link">Login</a></li>
+                <li id="nav-profile-menu" class="nav-profile" style="display: none;">
+                    <div class="profile-avatar" onclick="toggleProfileDropdown()">
+                        <span id="profileInitial">U</span>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="reports.html" class="dropdown-item">📁 My Reports</a>
+                        <a href="#" onclick="logoutUser()" class="dropdown-item text-error">🚪 Logout</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Hero -->
+    <section class="about-hero">
+        <div class="container" style="text-align: center;">
+            <h1 class="about-hero-title">Empowering Data</h1>
+            <p class="about-hero-subtitle">
+                DataVista is a cutting-edge analytics platform designed to transform raw, complex data into clear, actionable intelligence for modern professionals.
+            </p>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission-section" style="padding-top: 0;">
+        <div class="container">
+            <div class="mission-card card">
+                <div class="card-body" style="text-align: center; padding: 4rem 2rem;">
+                    <h3 class="mission-label">Our Mission</h3>
+                    <h2 class="mission-title">
+                        To democratize data analysis by providing an intuitive, enterprise-grade platform accessible to everyone.
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Grid -->
+    <section class="about-stats-section" style="padding: 4rem 0;">
+        <div class="container">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value">10+</div>
+                    <div class="stat-label" style="margin-top: 0.5rem;">Chart Types</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1M+</div>
+                    <div class="stat-label" style="margin-top: 0.5rem;">Rows Supported</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label" style="margin-top: 0.5rem;">Local Processing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label" style="margin-top: 0.5rem;">Possibilities</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities Bento Box -->
+    <section class="capabilities-section">
+        <div class="container">
+            <h2 class="section-title">Platform Capabilities</h2>
+            <div class="bento-grid">
+                <div class="bento-card card large">
+                    <div class="card-body">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Advanced Analytics</h3>
+                        <p>Comprehensive statistical analysis including sales patterns, customer segmentation, regional performance, and temporal trends all running locally on your machine.</p>
+                    </div>
+                </div>
+                <div class="bento-card card">
+                    <div class="card-body">
+                        <div class="feature-icon">📈</div>
+                        <h3>Pro Visualizations</h3>
+                        <p>Generate beautiful charts and complex 3D visualizations instantly.</p>
+                    </div>
+                </div>
+                <div class="bento-card card">
+                    <div class="card-body">
+                        <div class="feature-icon">📄</div>
+                        <h3>Automated Reports</h3>
+                        <p>Create branded PDF reports with executive summaries and recommendations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Modern Footer Section -->
+    <footer class="modern-footer">
+        <div class="footer-bg-animation"></div>
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand-section">
+                    <div class="brand-logo-footer">
+                        <span class="brand-icon">📊</span>
+                        <span class="brand-name">DataVista</span>
+                    </div>
+                    <p class="brand-slogan">Transforming Data into Intelligence</p>
+                    <p class="brand-desc" style="color: var(--text-secondary); margin-bottom: 1.5rem;">The most powerful analytics platform for modern data professionals. Built with precision, designed for excellence.</p>
+                </div>
+
+                <div class="footer-links-grid">
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Product</h4>
+                        <ul class="footer-list">
+                            <li><a href="/#features">Features</a></li>
+                            <li><a href="/#how-to-use">How It Works</a></li>
+                            <li><a href="/#app">Dashboard</a></li>
+                            <li><a href="about.html">About</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Resources</h4>
+                        <ul class="footer-list">
+                            <li><a href="#">Documentation</a></li>
+                            <li><a href="#">Tutorials</a></li>
+                            <li><a href="#">API Guide</a></li>
+                            <li><a href="#">Support</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Company</h4>
+                        <ul class="footer-list">
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-left">
+                    <p>&copy; 2025 DataVista. Crafted with ❤️ by Ankit Raj</p>
+                </div>
+                <div class="footer-bottom-right">
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 id="authTitle">Login</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="authUsername" placeholder="Username">
+            </div>
+            <div id="emailGroup" class="form-group" style="display: none;">
+                <label>Email</label>
+                <input type="email" id="authEmail" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="authPassword" placeholder="Password">
+            </div>
+            <button class="cta-button" id="authSubmitBtn" onclick="submitAuth()" style="width:100%; margin-top: 10px;">Login</button>
+            <p id="toggleAuthMode" style="text-align: center; margin-top: 15px; color: var(--text-secondary); cursor: pointer;" onclick="toggleAuthMode()">Need an account? Sign up</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const animateElements = document.querySelectorAll('.stat-card, .bento-card, .mission-card');
+            animateElements.forEach(el => {
+                el.classList.add('animate-hidden');
+                observer.observe(el);
+            });
+            
+            // Check auth immediately
+            fetch('/api/auth/me')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.authenticated) {
+                        currentUser = data.user;
+                        updateNavigationUI();
+                    }
+                });
+        });
+    </script>
+</body>
+</html>
