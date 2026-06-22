@@ -18,8 +18,9 @@ Transform your CSV data into actionable insights with professional visualization
 </div>
 
 ---
-<img width="1326" height="621" alt="image" src="https://github.com/user-attachments/assets/84f1070c-b30d-4165-bf99-63a9e47850f3" />
-<img width="988" height="626" alt="image" src="https://github.com/user-attachments/assets/c556fc56-41d7-4ffd-a30b-71b281a068ed" />
+<img width="1208" height="568" alt="image" src="https://github.com/user-attachments/assets/d7bc0f42-b173-4c0d-8db4-6994153a12cd" />
+<img width="386" height="463" alt="image" src="https://github.com/user-attachments/assets/d1286e96-2409-4378-977e-6848cee17947" />
+
 
 
 ## 🎯 Overview
