@@ -51,25 +51,120 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
+        <div class="hero-bg-grid"></div>
+        <div class="hero-ambient-glow"></div>
         <div class="container hero-grid">
             <div class="hero-text-content">
-                <h1 class="hero-title">Enterprise-Grade Data Analytics & Automated Reporting</h1>
-                <p class="hero-subtitle">Turn complex data into clear, actionable insights with DataVista</p>
-                <button class="cta-button"
-                    onclick="document.getElementById('app').scrollIntoView({behavior: 'smooth'})">Get Started</button>
+                <h1 class="hero-title">Transform raw CSVs into executive reports in seconds.</h1>
+                <p class="hero-subtitle">Stop wrestling with spreadsheets. DataVista's intelligent engine generates stunning, publication-ready PDF reports directly from your data—all locally, completely secure.</p>
+                
+                <div class="hero-cta-group">
+                    <button class="cta-button"
+                        onclick="document.getElementById('app').scrollIntoView({behavior: 'smooth'})">Start Analyzing Free</button>
+                    <button class="btn-secondary" onclick="document.getElementById('how-to-use').scrollIntoView({behavior: 'smooth'})">
+                        See How It Works
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 8px;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+
+                <div class="social-proof">
+                    <div class="avatar-group">
+                        <img src="https://i.pravatar.cc/100?img=68" alt="User">
+                        <img src="https://i.pravatar.cc/100?img=47" alt="User">
+                        <img src="https://i.pravatar.cc/100?img=33" alt="User">
+                        <img src="https://i.pravatar.cc/100?img=12" alt="User">
+                    </div>
+                    <div class="proof-text">
+                        <div class="stars">★★★★★</div>
+                        <p>Trusted by <strong>10,000+</strong> data teams</p>
+                    </div>
+                </div>
             </div>
+            
             <div class="hero-visual-content">
-                <div class="hero-chart-container">
-                    <div class="chart-pillar pillar-1"></div>
-                    <div class="chart-pillar pillar-2"></div>
-                    <div class="chart-pillar pillar-3"></div>
-                    <div class="chart-pillar pillar-4"></div>
-                    <div class="chart-pillar pillar-5"></div>
-                    <div class="chart-base"></div>
+                <!-- Modern Glassmorphic Dashboard Preview -->
+                <div class="dashboard-mockup">
+                    <div class="mockup-header">
+                        <div class="window-controls">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="mockup-tabs">
+                            <div class="m-tab active">Sales_Data_Q3.csv</div>
+                            <div class="m-tab">Analysis Report</div>
+                        </div>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-sidebar">
+                            <div class="sidebar-item active"></div>
+                            <div class="sidebar-item"></div>
+                            <div class="sidebar-item"></div>
+                            <div class="sidebar-item"></div>
+                        </div>
+                        <div class="mockup-main">
+                            <div class="mockup-stats">
+                                <div class="m-stat">
+                                    <span class="m-label">Total Revenue</span>
+                                    <span class="m-val">$1.2M <span class="m-trend positive">+14%</span></span>
+                                </div>
+                                <div class="m-stat">
+                                    <span class="m-label">Active Users</span>
+                                    <span class="m-val">45.2K <span class="m-trend positive">+8%</span></span>
+                                </div>
+                                <div class="m-stat">
+                                    <span class="m-label">Churn Rate</span>
+                                    <span class="m-val">2.1% <span class="m-trend negative">-0.5%</span></span>
+                                </div>
+                            </div>
+                            <div class="mockup-chart-container">
+                                <div class="m-chart-header">
+                                    <h4>Revenue Growth</h4>
+                                    <div class="m-chart-legend">
+                                        <span class="leg-item"><span class="dot green"></span> Direct</span>
+                                        <span class="leg-item"><span class="dot gray"></span> Organic</span>
+                                    </div>
+                                </div>
+                                <div class="m-chart">
+                                    <!-- Abstract glowing SVG chart -->
+                                    <svg viewBox="0 0 400 150" preserveAspectRatio="none" class="chart-svg">
+                                        <defs>
+                                            <linearGradient id="gradient-line" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="rgba(16, 185, 129, 0.2)" />
+                                                <stop offset="50%" stop-color="rgba(16, 185, 129, 1)" />
+                                                <stop offset="100%" stop-color="rgba(16, 185, 129, 0.2)" />
+                                            </linearGradient>
+                                            <linearGradient id="gradient-fill" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" stop-color="rgba(16, 185, 129, 0.4)" />
+                                                <stop offset="100%" stop-color="rgba(16, 185, 129, 0)" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path class="chart-line-bg" d="M0,120 Q50,90 100,100 T200,60 T300,80 T400,20 L400,150 L0,150 Z" fill="url(#gradient-fill)" />
+                                        <path class="chart-line" d="M0,120 Q50,90 100,100 T200,60 T300,80 T400,20" fill="none" stroke="url(#gradient-line)" stroke-width="3" stroke-linecap="round" />
+                                        
+                                        <path class="chart-line-secondary" d="M0,140 Q80,120 150,130 T250,100 T350,110 T400,70" fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="2" stroke-dasharray="5,5" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating abstract UI elements -->
+                    <div class="floating-widget widget-1">
+                        <div class="w-icon">📄</div>
+                        <div class="w-text">
+                            <strong>Report Ready</strong>
+                            <span>PDF generated in 1.2s</span>
+                        </div>
+                    </div>
+                    <div class="floating-widget widget-2">
+                        <div class="w-icon">✨</div>
+                        <div class="w-text">
+                            <strong>Insights Found</strong>
+                            <span>3 anomalies detected</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="hero-background"></div>
     </section>
 
     <!-- Auth Modal -->
@@ -102,30 +197,43 @@
     <!-- Main Application Section -->
     <section id="app" class="app-section">
         <div class="container">
-            <div class="app-header">
+            <div class="app-header modern-app-header">
+                <div class="header-badge">
+                    <span class="pulse-dot"></span>
+                    <span>Analysis Engine</span>
+                </div>
                 <h2>Data Analysis Dashboard</h2>
-                <p>Upload your CSV file and generate comprehensive reports instantly</p>
+                <p>Drop your CSV below and let our intelligent engine generate comprehensive, publication-ready reports in seconds.</p>
             </div>
 
             <div class="dashboard-layout">
                 <!-- Top Section: File Upload -->
                 <div class="upload-section">
-                    <div class="card upload-card">
+                    <div class="card upload-card modern-upload-card">
                         <div class="card-body">
-                            <div class="file-upload-area" id="fileUploadArea">
+                            <div class="file-upload-area modern-upload-area" id="fileUploadArea">
                                 <input type="file" id="csvFile" accept=".csv" style="display: none;">
                                 <div class="upload-content">
-                                    <div class="upload-icon">📤</div>
+                                    <div class="upload-icon-svg">
+                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                    </div>
                                     <div class="upload-details">
-                                        <p class="upload-text">Click to select or drag & drop your CSV file</p>
-                                        <p class="upload-hint">Supports files up to 500MB</p>
+                                        <p class="upload-text"><strong>Click to browse</strong> or drag and drop your CSV file here</p>
+                                        <p class="upload-hint">Maximum file size: 500MB</p>
                                     </div>
                                 </div>
                             </div>
-                            <div id="fileInfo" class="file-info" style="display: none;">
+                            <div id="fileInfo" class="file-info modern-file-info" style="display: none;">
                                 <div class="file-status">
-                                    <span class="status-icon">✓</span>
-                                    <span id="fileName">file.csv</span>
+                                    <div class="file-icon-svg">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                    </div>
+                                    <span id="fileName" class="modern-file-name">file.csv</span>
+                                    <span class="status-badge">Ready for analysis</span>
                                 </div>
                                 <button class="btn-secondary btn-sm" onclick="resetFile()">Change File</button>
                             </div>
