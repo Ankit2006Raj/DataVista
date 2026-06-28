@@ -715,12 +715,15 @@ section {
         padding-top: 2rem;
     }
 
-    .hero-text-content {
-        align-items: center;
+    .hero-title {
+        font-size: 2.5rem;
+        max-width: 100%;
+        word-wrap: break-word;
     }
 
-    .hero-title {
-        font-size: 3.2rem;
+    .hero-text-content {
+        align-items: center;
+        max-width: 100%;
     }
 
     .hero-subtitle {
@@ -744,6 +747,7 @@ section {
     .dashboard-mockup {
         transform: rotateY(-8deg) rotateX(8deg);
         animation: floatSimple 5s ease-in-out infinite alternate;
+        max-width: 100%;
     }
 
     @keyframes floatSimple {
@@ -1450,7 +1454,11 @@ p {
 
 @media (max-width: 768px) {
     .hero-title {
-        font-size: 3rem;
+        font-size: 2rem;
+    }
+
+    .mockup-stats {
+        flex-wrap: wrap;
     }
 
     .features-grid,
